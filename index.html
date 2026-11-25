@@ -46,7 +46,7 @@ function ago(t){const m=Math.floor((Date.now()-new Date(t))/6e4);if(m<1)return"�
 async function loadMe(){const{data:{session}}=await sb.auth.getSession();if(!session){me=null;return}
  const{data}=await sb.from("profiles").select("*").eq("id",session.user.id).single();me=data}
 async function feed(onlyMine){
- let q=sb.from("posts").select("id,room,body,created_at,user_id,profiles(name,handle,gov),likes(user_id),comments(id,body,profiles(name))").order("created_at",{ascending:false}).limit(50);
+ let q=sb.from("posts").select("id,room,body,created_at,user_id,profiles!posts_user_id_fkey(name,handle,gov),likes(user_id),comments(id,body,profiles(name))").order("created_at",{ascending:false}).limit(50);
  if(room!=="الكل"&&!onlyMine)q=q.eq("room",room);if(onlyMine)q=q.eq("user_id",me.id);
  const{data,error}=await q;return error?[]:data}
 function post(p){const liked=p.likes.some(l=>l.user_id===me.id),pr=p.profiles||{};
